@@ -76,5 +76,3 @@ app.post("/api/add_shop", (req, res) => {
 app.listen(process.env.PORT, () => {
     console.log("Start server on this port", process.env.PORT);
 })
-
-module.exports = app;
