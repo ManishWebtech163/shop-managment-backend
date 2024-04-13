@@ -11,15 +11,6 @@ app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 const PORT = process.env.PORT || 3000;
 // Paths
 const shopsFilePath = path.join(__dirname, "db", "shops.json");
-const staticFilesPath = path.join(__dirname, "dist");
-
-
-
-// --serve front end --
-app.use(express.static("dist"));
-app.get("/", (_, res) => {
-    res.sendFile(path.join(staticFilesPath, "index.html"));
-});
 
 
 // Read shops data from file
