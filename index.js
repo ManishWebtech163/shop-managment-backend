@@ -17,7 +17,7 @@ const staticFilesPath = path.join(__dirname, "dist");
 
 // --serve front end --
 app.use(express.static(staticFilesPath));
-app.get("/", (_, res) => {
+app.get("/home", (_, res) => {
     res.sendFile(path.join(staticFilesPath, "index.html"));
 });
 
