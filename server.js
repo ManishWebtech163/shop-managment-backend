@@ -74,5 +74,5 @@ app.post("/api/add_shop", (req, res) => {
 
 // --lisitin app--
 app.listen(process.env.PORT, () => {
-    console.log("Start server on", process.env.PORT);
+    console.log("Start server on this port", process.env.PORT);
 })
