@@ -2,6 +2,7 @@ const express = require("express");
 const fs = require("fs");
 const path = require("path");
 require('dotenv').config();
+const cors = require("cors");
 
 // --
 const app = express()
@@ -9,6 +10,13 @@ app.use(express.json()); // Parse JSON bodies
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 
 const PORT = process.env.PORT || 3000;
+
+// Use cors middleware with specific origin
+app.use(cors({
+    origin: 'https://shop-managment.vercel.app/'
+}));
+
+
 // Paths
 const shopsFilePath = path.join(__dirname, "db", "shops.json");
 
