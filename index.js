@@ -7,74 +7,86 @@ const app = express()
 app.use(express.json()); // Parse JSON bodies
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 
+const PORT = process.env.PORT || 3000;
+// Paths
+const shopsFilePath = path.join(__dirname, "db", "shops.json");
+const staticFilesPath = path.join(__dirname, "dist");
 
-// --
-const shopsFilePath = "./db/shops.json";
-// Function to read shops data from file
-function readShopsData() {
-    return JSON.parse(fs.readFileSync(shopsFilePath, { encoding: 'utf8' }));
-}
 
 
 // --serve front end --
-app.use(express.static("dist"));
+app.use(express.static(staticFilesPath));
 app.get("/", (_, res) => {
-    res.sendFile(path.join(__dirname, "dist", "index.html"));
-})
+    res.sendFile(path.join(staticFilesPath, "index.html"));
+});
+
+
+// Read shops data from file
+function readShopsData() {
+    try {
+        const data = fs.readFileSync(shopsFilePath, { encoding: 'utf8' });
+        return JSON.parse(data);
+    } catch (error) {
+        console.error("Error reading shops data:", error);
+        return [];
+    }
+}
+
 
 // --routes--
+// Route to get shops data
 app.get("/api/shop_data", (_, res) => {
     const shopsData = readShopsData();
-    res.send(shopsData);
-})
+    res.json(shopsData);
+});
 
-// --remove location--
+
+// Route to delete a shop
 app.post("/api/delete_shop", (req, res) => {
-    const { location } = req.body
+    const { location } = req.body;
     let shopsData = readShopsData();
 
     // Filter out the shop with the given location
-    const removeLocation = shopsData.filter(f => f.location !== location);
+    const updatedShopsData = shopsData.filter(shop => shop.location !== location);
+
     // Write the updated data back to the file
-    fs.writeFile(shopsFilePath, JSON.stringify(removeLocation), err => {
+    fs.writeFile(shopsFilePath, JSON.stringify(updatedShopsData), err => {
         if (err) {
-            res.send("delete unsuccess")
+            console.error("Error deleting shop:", err);
+            res.status(500).send("Delete unsuccessful");
         } else {
-            // If successful, send the updated data
-            shopsData = readShopsData(); // Read the updated data
-            res.send("delete success")
+            res.send("Delete successful");
         }
-    })
-})
+    });
+});
 
-
-// --add shop--
+// Route to add a new shop
 app.post("/api/add_shop", (req, res) => {
-    const data = req.body
+    const data = req.body;
     let shopsData = readShopsData();
 
-    if (shopsData.some(s => s.location === data.location)) {
-        res.send("Data already exist")
+    if (shopsData.some(shop => shop.location === data.location)) {
+        res.status(400).send("Shop already exists");
         return;
     }
-    // Filter out the shop with the given location
-    const addedData = [...shopsData, data];
+
+    // Add the new shop data
+    shopsData.push(data);
+
     // Write the updated data back to the file
-    fs.writeFile(shopsFilePath, JSON.stringify(addedData), err => {
+    fs.writeFile(shopsFilePath, JSON.stringify(shopsData), err => {
         if (err) {
-            res.send("add unsuccess")
+            console.error("Error adding shop:", err);
+            res.status(500).send("Add unsuccessful");
         } else {
-            // If successful, send the updated data
-            shopsData = readShopsData(); // Read the updated data
-            res.send("add success")
+            res.send("Add successful");
         }
-    })
-})
+    });
+});
 
-
-// --lisitin app--
-app.listen(process.env.PORT, () => {
-    console.log("Start server on this port", process.env.PORT);
-})
+// Start the server
+app.listen(PORT, () => {
+    console.log("Server is running on port", PORT);
+});
 
 module.exports = app;
