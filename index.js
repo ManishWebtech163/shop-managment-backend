@@ -64,8 +64,7 @@ app.post("/api/add_shop", (req, res) => {
     let shopsData = readShopsData();
 
     if (shopsData.some(shop => shop.location === data.location)) {
-        res.status(400).send("Shop already exists");
-        return;
+        return res.status(400).send("Shop already exists");
     }
 
     // Add the new shop data
@@ -77,7 +76,7 @@ app.post("/api/add_shop", (req, res) => {
             console.error("Error adding shop:", err);
             res.status(500).send("Add unsuccessful");
         } else {
-            res.send("Add successful");
+            res.status(200).send("Add successful");
         }
     });
 });
