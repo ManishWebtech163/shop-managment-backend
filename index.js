@@ -7,8 +7,6 @@ const app = express()
 app.use(express.json()); // Parse JSON bodies
 app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 
-// --serve front end --
-app.use('/static', express.static('dist'))
 
 // --
 const shopsFilePath = "./db/shops.json";
@@ -18,6 +16,11 @@ function readShopsData() {
 }
 
 
+// --serve front end --
+app.use(express.static("dist"));
+app.get("/", (_, res) => {
+    res.sendFile(path.join(__dirname, "dist", "index.html"));
+})
 
 // --routes--
 app.get("/api/shop_data", (_, res) => {
