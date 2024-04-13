@@ -12,9 +12,7 @@ app.use(express.urlencoded({ extended: true })); // Parse URL-encoded bodies
 const PORT = process.env.PORT || 3000;
 
 // Use cors middleware with specific origin
-app.use(cors({
-    origin: 'https://shop-managment.vercel.app/'
-}));
+app.use(cors());
 
 
 // Paths
